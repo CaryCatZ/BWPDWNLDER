@@ -6,6 +6,7 @@ import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 
 import java.io.BufferedInputStream;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -31,7 +32,7 @@ abstract class AbstractDownloader implements Downloader {
             connection.addRequestProperty("User-Agent", USER_AGENT);
             connection.connect();
             in = connection.getInputStream();
-
+            LOGGER.trace("Start transfer to {}", file.getPath());
             try (BufferedInputStream buf = new BufferedInputStream(in); OutputStream out = sink.openBufferedStream()) {
                 buf.transferTo(out);
                 out.flush();

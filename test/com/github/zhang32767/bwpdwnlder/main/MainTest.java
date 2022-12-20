@@ -10,7 +10,7 @@ public class MainTest extends Super {
         String[] s = "1 2 3 4 5 6 7 8 --path test/temp --format {index}.jpg".split(" ");
         Main.main(s);
 
-        waitUntilStopping();
+        waitUntilStopping(Main.getExecutor());
         assertDownloaded();
     }
 }

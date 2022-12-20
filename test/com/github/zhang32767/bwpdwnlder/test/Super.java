@@ -2,12 +2,14 @@ package com.github.zhang32767.bwpdwnlder.test;
 
 
 import com.github.zhang32767.bwpdwnlder.main.Main;
+import org.junit.After;
 import org.junit.Before;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -16,6 +18,15 @@ import static org.junit.Assert.assertTrue;
 public abstract class Super {
     @Before
      public void setUp() throws Exception {
+        cleanDir();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+//        cleanDir();
+    }
+
+    private void cleanDir() throws Exception {
         try (Stream<Path> stream = Files.list(Path.of("test/temp"))) {
             for (Path path : stream.toList()) {
                 Files.deleteIfExists(path);
@@ -23,9 +34,9 @@ public abstract class Super {
         }
     }
 
-    protected void waitUntilStopping() throws Exception {
+    protected void waitUntilStopping(ThreadPoolExecutor executor) throws Exception {
         TimeUnit.SECONDS.sleep(10);
-        while (!Main.getExecutor().getQueue().isEmpty() || Main.getExecutor().getActiveCount() != 0) {
+        while (!executor.getQueue().isEmpty() || executor.getActiveCount() != 0) {
             Thread.onSpinWait();
         }
     }
