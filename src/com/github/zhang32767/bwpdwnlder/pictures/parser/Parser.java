@@ -6,13 +6,14 @@ import org.jsoup.nodes.Element;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Parser {
     private Parser() {
     }
 
     public static LinkedList<Picture.PictureInfo> parse(Document doc) {
-        return parse(doc, List.of(0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+        return parse(doc, IntStream.range(0, 12).boxed().toList());
     }
 
     public static LinkedList<Picture.PictureInfo> parse(Document doc, List<Integer> indexes) {

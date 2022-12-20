@@ -31,7 +31,7 @@ abstract class AbstractDownloader implements Downloader {
             connection.addRequestProperty("User-Agent", USER_AGENT);
             connection.connect();
             in = connection.getInputStream();
-
+            LOGGER.trace("Start transfer to {}", file.getPath());
             try (BufferedInputStream buf = new BufferedInputStream(in); OutputStream out = sink.openBufferedStream()) {
                 buf.transferTo(out);
                 out.flush();

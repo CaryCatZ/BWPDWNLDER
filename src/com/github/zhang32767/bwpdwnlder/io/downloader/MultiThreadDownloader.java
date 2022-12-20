@@ -52,6 +52,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
             int n = i;
 
             Runnable task = () -> {
+                LOGGER.trace("Start downloading from {} to {} ({} - {})", file.getAddress(), file.getPath(), startPos, endPos);
                 downloadAPart(file, startPos, endPos, finished, n, 0);
                 finished.getAndIncrement();
                 if (finished.get() == threadCount) { //is the last thread
@@ -62,27 +63,29 @@ public class MultiThreadDownloader extends AbstractDownloader {
         }
     }
 
-    private <T extends DownloadableFile> void downloadAPart(T file, long from, long to, AtomicInteger finished, int i, int tried) {
+    private <T extends DownloadableFile> void downloadAPart(T file, long startPos, long endPos, AtomicInteger finished, int i, int tried) {
         InputStream in;
         try {
             URLConnection connection = new URL(file.getAddress()).openConnection();
             connection.setDoInput(true);
             connection.addRequestProperty("User-Agent", USER_AGENT);
-            connection.addRequestProperty("RANGE", "bytes=%s-%s".formatted(from, to));
+            connection.addRequestProperty("RANGE", "bytes=%s-%s".formatted(startPos, endPos));
             connection.connect();
             in = connection.getInputStream();
 
+            LOGGER.trace("Connected to {}, start waiting!", file.getAddress());
             while (finished.get() != i) {
                 Thread.onSpinWait();
             }
 
             Files.asByteSink(file, FileWriteMode.APPEND).writeFrom(in);
+            LOGGER.trace("Successfully downloaded to {} ({} - {})", file.getPath(), startPos, endPos);
         } catch (Exception e) {
             if (++tried > 4) {
-                LOGGER.warn("Cannot download the part of file ({} - {}): {}", from, to, file);
-                downloadAPart(file, from, to, finished, i, tried);
+                LOGGER.warn("Cannot download the part of file ({} - {}): {}", startPos, endPos, file, e);
+                downloadAPart(file, startPos, endPos, finished, i, tried);
             } else {
-                LOGGER.error("Cannot download the part of file ({} - {}): {}", from, to, file);
+                LOGGER.error("Cannot download the part of file ({} - {}): {}", startPos, endPos, file, e);
             }
         }
     }
@@ -91,8 +94,10 @@ public class MultiThreadDownloader extends AbstractDownloader {
         try {
             URLConnection connection = new URL(file.getAddress()).openConnection();
             connection.connect();
-            return connection.getContentLengthLong();
+            long size = connection.getContentLengthLong();
+            LOGGER.debug("Got the file size of {}: {} KiB", file.getPath(), size / 1024);
 
+            return size;
         } catch (Exception e) {
             LOGGER.warn("Fail to get file size!", e);
             return -1;
