@@ -53,7 +53,6 @@ public class MultiThreadDownloader extends AbstractDownloader {
 
             Runnable task = () -> {
                 LOGGER.trace("Start downloading from {} to {} ({} - {})", file.getAddress(), file.getPath(), startPos, endPos);
-
                 downloadAPart(file, startPos, endPos, finished, n, 0);
                 finished.getAndIncrement();
                 if (finished.get() == threadCount) { //is the last thread
