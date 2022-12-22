@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Main {
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(12, 24, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(64));
-    private static final MultiThreadDownloaderService downloaderService = new MultiThreadDownloaderService(executor, new MultiThreadDownloader(executor));
+    private static ThreadPoolExecutor executor;
+    private static MultiThreadDownloaderService downloaderService;
     public static final Logger LOGGER = LogManager.getLogger("bwpdwnlder");
 
     public static void main(String[] s) {
@@ -35,6 +35,18 @@ public class Main {
             System.out.println("Use --help or -h to get use help.");
             System.exit(1);
         }
+
+        if (args.threadCount > 8) LOGGER.warn("Thread count may too large: {}", args.threadCount);
+        executor = new ThreadPoolExecutor(args.threadCount*4, args.threadCount*8, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(args.threadCount*16));
+        downloaderService = new MultiThreadDownloaderService(executor, new MultiThreadDownloader(executor, args.threadCount));
+
+        /* DEBUG BLOCK */
+        LOGGER.debug("================== DEBUG ==================");
+        LOGGER.debug("Arguments: {}", args);
+        LOGGER.debug("Executor: {}", executor);
+        LOGGER.debug("DownloaderService: {}", downloaderService);
+        LOGGER.debug("================== DEBUG ==================");
+        /* DEBUG BLOCK */
 
         LinkedHashMap<Integer, LinkedList<Integer>> pages = new LinkedHashMap<>();
         args.indexes.sort(Comparator.comparingInt(o -> o));
@@ -73,7 +85,7 @@ public class Main {
                         downloaderService.download(picture);
                     });
                 } catch (Exception e) {
-                    LOGGER.error("Fail to get the index", e);
+                    LOGGER.error("Exception in getting index", e);
                 }
             });
         }
@@ -101,5 +113,17 @@ public class Main {
          **/
         @Option(name = "--format")
         private String format = "{date}_{name}.jpg";
+
+        @Option(name = "--threadCount")
+        private int threadCount = 6;
+
+        @Override
+        public String toString() {
+            return "[" +
+                    "indexes = " + indexes + ", " +
+                    "path = " + path + ", " +
+                    "filename format = " + format + ", " +
+                    "thread count = " + threadCount + "]";
+        }
     }
 }

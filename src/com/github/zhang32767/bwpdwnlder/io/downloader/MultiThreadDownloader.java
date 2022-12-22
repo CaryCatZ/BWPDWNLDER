@@ -14,10 +14,10 @@ import static com.github.zhang32767.bwpdwnlder.main.Main.LOGGER;
 
 public class MultiThreadDownloader extends AbstractDownloader {
     private final ExecutorService executor;
-    private int threadCount = 4;
+    private final int threadCount;
 
     public MultiThreadDownloader(ExecutorService executor) {
-        this.executor = executor;
+        this(executor, 6);
     }
 
     public MultiThreadDownloader(ExecutorService executor, int threadCount) {
@@ -35,6 +35,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
                 super.download(file);
                 LOGGER.info("Downloaded: {}", file);
             } else {
+                LOGGER.info("Start multi-thread downloading: count={}", threadCount);
                 downloadMultiThread(file, fileSize);
             }
         } finally {
@@ -102,5 +103,11 @@ public class MultiThreadDownloader extends AbstractDownloader {
             LOGGER.warn("Fail to get file size!", e);
             return -1;
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" +
+                "thread count = " + threadCount + "]";
     }
 }

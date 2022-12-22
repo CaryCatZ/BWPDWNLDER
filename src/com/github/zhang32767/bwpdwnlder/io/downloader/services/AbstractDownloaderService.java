@@ -18,4 +18,11 @@ public abstract class AbstractDownloaderService<DOWNLOADER extends Downloader> i
     public <T extends DownloadableFile> void download(T file) {
         downloader.download(file);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" +
+                "executor = " + executor + ", " +
+                "downloader = " + downloader + "]";
+    }
 }
