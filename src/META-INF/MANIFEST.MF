@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: com.github.zhang32767.bwpdwnlder.main.Main
+Main-Class: io.github.carycatz.bwpdwnlder.core.Main
 
