@@ -39,7 +39,7 @@ abstract class AbstractDownloader implements Downloader {
         InputStream in;
 
         try {
-            URLConnection connection = new URL(file.getAddress()).openConnection();
+            URLConnection connection = new URL(file.getUrl()).openConnection();
             connection.setDoInput(true);
             connection.addRequestProperty("User-Agent", USER_AGENT);
             connection.connect();

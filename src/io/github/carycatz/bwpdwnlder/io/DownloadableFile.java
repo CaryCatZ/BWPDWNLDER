@@ -4,15 +4,15 @@ package io.github.carycatz.bwpdwnlder.io;
 import java.io.File;
 
 public class DownloadableFile extends File implements Downloadable, LockableFile {
-    private final String address;
+    protected String url;
 
-    public DownloadableFile(String pathname, String address) {
+    public DownloadableFile(String pathname, String url) {
         super(pathname);
-        this.address = address;
+        this.url = url;
     }
 
     @Override
-    public String getAddress() {
-        return address;
+    public String getUrl() {
+        return url;
     }
 }

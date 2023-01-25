@@ -57,7 +57,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
             int n = i;
 
             executor.execute(() -> {
-                LOGGER.trace("Start downloading from {} to {} ({} - {})", file.getAddress(), file.getPath(), startPos, endPos);
+                LOGGER.trace("Start downloading from {} to {} ({} - {})", file.getUrl(), file.getPath(), startPos, endPos);
                 downloadAPart(file, startPos, endPos, finished, n, 0);
                 finished.getAndIncrement();
                 if (finished.get() == threadCount) { //is the last thread
@@ -73,14 +73,14 @@ public class MultiThreadDownloader extends AbstractDownloader {
     private <T extends DownloadableFile> void downloadAPart(T file, long startPos, long endPos, AtomicInteger finished, int i, int tried) {
         InputStream in;
         try {
-            URLConnection connection = new URL(file.getAddress()).openConnection();
+            URLConnection connection = new URL(file.getUrl()).openConnection();
             connection.setDoInput(true);
             connection.addRequestProperty("User-Agent", USER_AGENT);
             connection.addRequestProperty("RANGE", "bytes=%s-%s".formatted(startPos, endPos));
             connection.connect();
             in = connection.getInputStream();
 
-            LOGGER.trace("Connected to {}, start waiting!", file.getAddress());
+            LOGGER.trace("Connected to {}, start waiting!", file.getUrl());
             while (finished.get() != i) {
                 Thread.onSpinWait();
             }
@@ -100,10 +100,10 @@ public class MultiThreadDownloader extends AbstractDownloader {
 
     private <T extends DownloadableFile> long getFileSize(T file) {
         try {
-            URLConnection connection = new URL(file.getAddress()).openConnection();
+            URLConnection connection = new URL(file.getUrl()).openConnection();
             connection.connect();
             long size = connection.getContentLengthLong();
-            LOGGER.debug("Got the file size of {}: {} KiB", file.getAddress(), size / 1024);
+            LOGGER.debug("Got the file size of {}: {} KiB", file.getUrl(), size / 1024);
 
             return size;
         } catch (Exception e) {

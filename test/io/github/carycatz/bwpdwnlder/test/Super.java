@@ -36,7 +36,7 @@ public abstract class Super {
     }
 
     protected void waitUntilStopping(ThreadPoolExecutor executor) throws Exception {
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(5);
         while (!executor.getQueue().isEmpty() || executor.getActiveCount() != 0) {
             Thread.onSpinWait();
         }
