@@ -1,7 +1,7 @@
 package io.github.carycatz.bwpdwnlder.io.downloader;
 
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
-import io.github.carycatz.bwpdwnlder.core.Main;
+import io.github.carycatz.bwpdwnlder.main.Main;
 
 import java.util.concurrent.ExecutorService;
 

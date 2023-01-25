@@ -3,7 +3,7 @@ package io.github.carycatz.bwpdwnlder.io.downloader;
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
-import io.github.carycatz.bwpdwnlder.core.Main;
+import io.github.carycatz.bwpdwnlder.main.Main;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;

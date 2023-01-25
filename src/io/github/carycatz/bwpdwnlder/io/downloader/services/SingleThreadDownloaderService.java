@@ -5,7 +5,7 @@ import io.github.carycatz.bwpdwnlder.io.downloader.SingleThreadDownloader;
 
 import java.util.concurrent.ExecutorService;
 
-import static io.github.carycatz.bwpdwnlder.core.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
 
 public class SingleThreadDownloaderService extends AbstractDownloaderService<SingleThreadDownloader> {
     public SingleThreadDownloaderService(ExecutorService executor, SingleThreadDownloader downloader) {

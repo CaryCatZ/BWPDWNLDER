@@ -1,4 +1,4 @@
-package io.github.carycatz.bwpdwnlder.core;
+package io.github.carycatz.bwpdwnlder.main;
 
 
 import io.github.carycatz.bwpdwnlder.test.Super;

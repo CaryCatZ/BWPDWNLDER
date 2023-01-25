@@ -1,4 +1,4 @@
-package io.github.carycatz.bwpdwnlder.core;
+package io.github.carycatz.bwpdwnlder.main;
 
 import io.github.carycatz.bwpdwnlder.io.downloader.MultiThreadDownloader;
 import io.github.carycatz.bwpdwnlder.io.downloader.services.MultiThreadDownloaderService;

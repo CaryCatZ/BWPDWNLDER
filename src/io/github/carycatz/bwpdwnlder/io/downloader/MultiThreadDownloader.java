@@ -10,7 +10,7 @@ import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.carycatz.bwpdwnlder.core.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
 
 public class MultiThreadDownloader extends AbstractDownloader {
     private final int threadCount;
