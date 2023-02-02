@@ -1,13 +1,12 @@
 package io.github.carycatz.bwpdwnlder.io.downloader;
 
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
-import io.github.carycatz.bwpdwnlder.main.Main;
 
-import java.util.concurrent.ExecutorService;
+import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
 
 public class SingleThreadDownloader extends AbstractDownloader {
-    public SingleThreadDownloader(ExecutorService executor) {
-        super(executor);
+    public SingleThreadDownloader() {
+        super(null);
     }
 
     @Override
@@ -15,7 +14,7 @@ public class SingleThreadDownloader extends AbstractDownloader {
         file.lock();
         try {
             super.download(file, reporterHook);
-            Main.LOGGER.info("Downloaded: {}", file);
+            LOGGER.info("Downloaded: {}", file);
         } finally {
             file.unlock();
         }

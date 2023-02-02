@@ -4,11 +4,13 @@ import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 
 import java.nio.file.Path;
 
-public class Image extends DownloadableFile {
+public final class Image extends DownloadableFile {
+    public static final String DEFAULT_FORMAT = "{date}_{name}_{resolution}.jpg";
+
     private final ImageInfo info;
 
     public Image(ImageInfo info, String path) {
-        this(info, path, info.date() + "_" + info.url().split("=")[1].split("&")[0]);
+        this(info, path, info.format(DEFAULT_FORMAT));
     }
 
     public Image(ImageInfo info, String path, String filename) {
@@ -19,7 +21,7 @@ public class Image extends DownloadableFile {
 
     @Override
     public String toString() {
-        return info.toString();
+        return info.toString() + " on " + this.getPath();
     }
 
     public record ImageInfo(String url, String description, String name, String date, Resolution resolution) {
@@ -33,7 +35,26 @@ public class Image extends DownloadableFile {
 
         @Override
         public String toString() {
-            return "BingWallpaper: %s %s from %s".formatted(date, description, url);
+            return "BingWallpaper: %s %s at %s".formatted(date, description, url);
+        }
+    }
+
+    public enum Resolution {
+        R_UHD(-1, -1), // best quality
+        R_1080P(1920, 1080),
+        R_720P(1280, 780),
+        R_480(400, 480);
+
+        public final int weight;
+        public final int height;
+        Resolution(int weight, int height) {
+            this.weight = weight;
+            this.height = height;
+        }
+
+        @Override
+        public String toString() {
+            return this == R_UHD ? "UHD" : weight + "x" + height;
         }
     }
 }

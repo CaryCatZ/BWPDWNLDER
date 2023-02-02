@@ -13,5 +13,7 @@
     <orderEntry type="library" name="apache.logging.log4j.core" level="application" />
     <orderEntry type="library" name="junit" level="application" />
     <orderEntry type="library" name="args4j" level="application" />
+    <orderEntry type="library" name="google.code.gson" level="application" />
+    <orderEntry type="library" name="apache.commons.lang3" level="application" />
   </component>
 </module>

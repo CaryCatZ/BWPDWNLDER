@@ -1,13 +1,13 @@
 package io.github.carycatz.bwpdwnlder.io.downloader;
 
-import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
+import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
@@ -15,11 +15,11 @@ import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
 public class MultiThreadDownloader extends AbstractDownloader {
     private final int threadCount;
 
-    public MultiThreadDownloader(ExecutorService executor) {
-        this(executor, 8);
+    public MultiThreadDownloader(ThreadPoolExecutor executor) {
+        this(executor, 2);
     }
 
-    public MultiThreadDownloader(ExecutorService executor, int threadCount) {
+    public MultiThreadDownloader(ThreadPoolExecutor executor, int threadCount) {
         super(executor);
         this.threadCount = threadCount;
     }
@@ -31,36 +31,38 @@ public class MultiThreadDownloader extends AbstractDownloader {
 
     @Override
     public <T extends DownloadableFile> void download(T file, Runnable reporterHook) {
-        file.lock();
-        long fileSize;
-        try {
-            fileSize = getFileSize(file);
-            if (fileSize == -1) {
-                super.download(file, reporterHook);
-                LOGGER.info("Downloaded: {}", file);
-            } else {
-                LOGGER.debug("Start multi-thread downloading: count={}", threadCount);
-                downloadMultiThread(file, reporterHook, fileSize);
+        LOGGER.info("Start downloading: {}", file);
+        executor.execute(() -> {
+            file.lock();
+            long fileSize;
+            try {
+                fileSize = getFileSize(file);
+                if (fileSize == -1) {
+                    super.download(file, reporterHook);
+                    LOGGER.info("Downloaded: {}", file);
+                } else {
+                    LOGGER.trace("Start multi-thread downloading: count={}", threadCount);
+                    download0(file, reporterHook, fileSize);
+                }
+            } finally {
+                file.unlock();
             }
-        } finally {
-            file.unlock();
-        }
+        });
     }
 
-    private <T extends DownloadableFile> void downloadMultiThread(T file, Runnable reporterHook, long fileSize) {
-        AtomicInteger finished = new AtomicInteger();
+    private <T extends DownloadableFile> void download0(T file, Runnable reporterHook, long fileSize) {
+        final AtomicInteger finished = new AtomicInteger();
         long singleChunkSize = fileSize / threadCount;
 
         for (int i = 0; i < threadCount; i++) {
             long startPos = i * singleChunkSize;
             long endPos = Math.min((i + 1) * singleChunkSize - 1, fileSize);
-            int n = i;
+            final int n = i;
 
             executor.execute(() -> {
                 LOGGER.trace("Start downloading from {} to {} ({} - {})", file.getUrl(), file.getPath(), startPos, endPos);
-                downloadAPart(file, startPos, endPos, finished, n, 0);
-                finished.getAndIncrement();
-                if (finished.get() == threadCount) { //is the last thread
+                download1(file, startPos, endPos, finished, n, 0);
+                if (finished.incrementAndGet() == threadCount) { //all finished
                     LOGGER.info("Downloaded: {}", file);
                     if (reporterHook != null) {
                         reporterHook.run();
@@ -70,7 +72,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
         }
     }
 
-    private <T extends DownloadableFile> void downloadAPart(T file, long startPos, long endPos, AtomicInteger finished, int i, int tried) {
+    private <T extends DownloadableFile> void download1(T file, long startPos, long endPos, AtomicInteger finished, int i, int tried) {
         InputStream in;
         try {
             URLConnection connection = new URL(file.getUrl()).openConnection();
@@ -91,7 +93,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
         } catch (Exception e) {
             if (++tried < 4) {
                 LOGGER.warn("Exception in  download the part of file ({} - {}): {}", startPos, endPos, file, e);
-                downloadAPart(file, startPos, endPos, finished, i, tried);
+                download1(file, startPos, endPos, finished, i, tried);
             } else {
                 LOGGER.error("Cannot download the part of file ({} - {}): {}", startPos, endPos, file, e);
             }

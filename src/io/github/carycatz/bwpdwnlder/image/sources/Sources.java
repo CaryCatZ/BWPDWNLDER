@@ -1,31 +1,17 @@
 package io.github.carycatz.bwpdwnlder.image.sources;
 
-import io.github.carycatz.bwpdwnlder.image.Resolution;
+import io.github.carycatz.bwpdwnlder.image.Image;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Function;
 
 public enum Sources {
-    OFFICIAL(OfficialSource.class),
-    IOLIU(IoliuSource.class),
-    BIMG(BimgSource.class);
+    OFFICIAL(OfficialSource::new),
+    IOLIU(IoliuSource::new),
+    BIMG(BimgSource::new);
 
-    private final Map<Resolution, Source> sources = new HashMap<>(Resolution.values().length);
+    final Function<Image.Resolution, Source> constructor;
 
-    Sources(Class<?> cls) {
-        try {
-            Constructor<?> constructor = cls.getDeclaredConstructor(Resolution.class);
-            constructor.setAccessible(true);
-            for (Resolution resolution : Resolution.values()) {
-                sources.put(resolution, (Source) constructor.newInstance(resolution));
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    public Source resolution(int idx) {
-        if (idx >= Resolution.values().length) throw new IllegalArgumentException("Invalid index");
-        return sources.get(Resolution.values()[idx]);
+    Sources(Function<Image.Resolution, Source> constructor) {
+        this.constructor = constructor;
     }
 }
