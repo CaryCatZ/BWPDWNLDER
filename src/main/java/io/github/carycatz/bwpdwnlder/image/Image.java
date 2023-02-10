@@ -27,7 +27,7 @@ public final class Image extends DownloadableFile {
     public record ImageInfo(String url, String description, String name, String date, Resolution resolution) {
         public String format(String pattern) {
             return pattern.replace("{url}", url)
-                    .replace("{description}", description)
+                    .replace("{description}", description.replace("/", "~"))
                     .replace("{name}", name)
                     .replace("{date}", date)
                     .replace("{resolution}", resolution.toString());
