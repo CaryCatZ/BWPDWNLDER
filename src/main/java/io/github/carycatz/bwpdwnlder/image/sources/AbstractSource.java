@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
 
 abstract class AbstractSource implements Source {
     public static final String BING = "https://cn.bing.com";
