@@ -2,7 +2,7 @@ package io.github.carycatz.bwpdwnlder.image.sources;
 
 import com.google.gson.JsonObject;
 import io.github.carycatz.bwpdwnlder.image.Image;
-import io.github.carycatz.bwpdwnlder.main.Main;
+import io.github.carycatz.bwpdwnlder.application.main.Main;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.carycatz.bwpdwnlder.main.Main.GSON;
-import static io.github.carycatz.bwpdwnlder.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.main.Main.GSON;
+import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
 
 public final class OfficialSource extends AbstractSource {
     public static final String URL = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=1&mkt=zh-CN";

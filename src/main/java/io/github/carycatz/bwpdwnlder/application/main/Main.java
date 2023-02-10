@@ -1,14 +1,12 @@
-package io.github.carycatz.bwpdwnlder.main;
+package io.github.carycatz.bwpdwnlder.application.main;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import io.github.carycatz.bwpdwnlder.application.AbstractLifeCycle;
+import io.github.carycatz.bwpdwnlder.application.Application;
 import io.github.carycatz.bwpdwnlder.image.Image;
 import io.github.carycatz.bwpdwnlder.image.sources.Sources;
-import io.github.carycatz.bwpdwnlder.io.downloader.Downloader;
 import io.github.carycatz.bwpdwnlder.io.downloader.MultiThreadDownloader;
 import io.github.carycatz.bwpdwnlder.io.downloader.SingleThreadDownloader;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.kohsuke.args4j.*;
 
@@ -24,18 +22,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public final class Main {
-    static ThreadPoolExecutor executor;
-    static Downloader downloader;
-    static Args args;
-    public static final Logger LOGGER = LogManager.getLogger("BWPDWNLDER");
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    public static boolean isSingleThreadMode = false;
-
+public final class Main extends AbstractLifeCycle {
     public static void main(String[] s) {
         prepare(s);
         printDebugBlock();
-        Application.run(args);
+        Application.run();
         cleanup();
     }
 
@@ -45,9 +36,9 @@ public final class Main {
 
         if (args.threadCount > 8) LOGGER.warn("Thread count may be too large: {}", args.threadCount);
 
-        isSingleThreadMode = args.threadCount <= 0;
-        executor = isSingleThreadMode ? null : (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactory());
-        downloader = isSingleThreadMode ? new SingleThreadDownloader() : new MultiThreadDownloader(executor, args.threadCount);
+        IS_SINGLE_THREAD_MODE = args.threadCount <= 0;
+        executor = IS_SINGLE_THREAD_MODE ? null : (ThreadPoolExecutor) Executors.newCachedThreadPool(new ThreadFactory());
+        downloader = IS_SINGLE_THREAD_MODE ? new SingleThreadDownloader() : new MultiThreadDownloader(executor, args.threadCount);
     }
 
     private static void parseArgs(String[] s) {
@@ -80,7 +71,7 @@ public final class Main {
     private static void printDebugBlock() {
         LOGGER.debug("================== DEBUG ==================");
         LOGGER.debug("Arguments: {}", args);
-        LOGGER.debug("Single-thread mode: {}", isSingleThreadMode);
+        LOGGER.debug("Single-thread mode: {}", IS_SINGLE_THREAD_MODE);
         LOGGER.debug("ThreadPoolExecutor: {}", executor);
         LOGGER.debug("Downloader: {}", downloader);
         LOGGER.debug("================== DEBUG ==================");
@@ -97,7 +88,7 @@ public final class Main {
         new CmdLineParser(args).printUsage(System.out);
     }
 
-    static class Args {
+    public static class Args {
         @Argument(usage = "indexes of images (0 is today's, 1 is yesterday's and so on)")
         public List<Integer> indexes = new ArrayList<>();
 
