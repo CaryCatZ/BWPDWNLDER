@@ -11,7 +11,7 @@ public final class Application extends AbstractLifeCycle {
         final AtomicInteger finished = new AtomicInteger();
 
         final Source source = SourceFactory.get(args.source, args.resolution);
-        ImageDownloader imageDownloader = ImageDownloader.create(source, downloader, args.output, args.format);
+        ImageDownloader imageDownloader = ImageDownloader.create(source, downloader, args.output.toPath(), args.format);
 
         imageDownloader.download(args.indexes, finished::getAndIncrement);
 

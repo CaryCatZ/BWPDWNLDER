@@ -11,6 +11,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.kohsuke.args4j.*;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -107,7 +108,7 @@ public final class Main extends AbstractLifeCycle {
         public String format = Image.DEFAULT_FORMAT;
 
         @Option(name = "--output", aliases = {"--out", "-o"}, usage = "Output")
-        public Path output = Path.of(".");
+        public File output = Path.of(".").toFile();
 
         @Option(name = "--resolution", aliases = {"--res", "-R"}, usage = "The resolution of images")
         public Image.Resolution resolution = Image.Resolution.R_UHD;
