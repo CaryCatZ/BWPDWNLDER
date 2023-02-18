@@ -4,13 +4,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public interface LockableFile {
-    Lock lock = new ReentrantLock();
+    Lock _lock = new ReentrantLock();
 
     default void lock() {
-        lock.lock();
+        _lock.lock();
     }
 
     default void unlock() {
-        lock.unlock();
+        _lock.unlock();
     }
 }

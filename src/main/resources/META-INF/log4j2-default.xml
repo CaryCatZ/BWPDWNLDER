@@ -6,11 +6,11 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <asyncRoot level="info">
             <filters>
                 <MarkerFilter marker="NETWORK_PACKETS" onMatch="DENY" onMismatch="NEUTRAL" />
             </filters>
             <AppenderRef ref="SysOut"/>
-        </Root>
+        </asyncRoot>
     </Loggers>
 </Configuration>

@@ -1,7 +1,6 @@
 package io.github.carycatz.bwpdwnlder.io.downloader;
 
 import com.google.common.io.FileWriteMode;
-import com.google.common.io.Files;
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 
 import java.io.InputStream;
@@ -10,11 +9,12 @@ import java.net.URLConnection;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
 
 public class MultiThreadDownloader extends AbstractDownloader {
     private final int threadCount;
 
+    @SuppressWarnings("unused")
     public MultiThreadDownloader(ThreadPoolExecutor executor) {
         this(executor, 2);
     }
@@ -82,13 +82,13 @@ public class MultiThreadDownloader extends AbstractDownloader {
             connection.connect();
             in = connection.getInputStream();
 
-            LOGGER.trace("Connected to {}, start waiting!", file.getUrl());
+            LOGGER.trace("Connected to {}, waiting!", file.getUrl());
             while (finished.get() != i) {
-                Thread.onSpinWait();
+                Thread.yield();
             }
 
             LOGGER.trace("Start transfer to {} ({} - {})", file.getPath(), startPos, endPos);
-            Files.asByteSink(file, FileWriteMode.APPEND).writeFrom(in);
+            writeFrom(file, in, FileWriteMode.APPEND);
             LOGGER.trace("Successfully downloaded to {} ({} - {})", file.getPath(), startPos, endPos);
         } catch (Exception e) {
             if (++tried < 4) {
@@ -112,11 +112,5 @@ public class MultiThreadDownloader extends AbstractDownloader {
             LOGGER.warn("Fail to get file size!", e);
             return -1;
         }
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "[" +
-                "thread count = " + threadCount + "]";
     }
 }

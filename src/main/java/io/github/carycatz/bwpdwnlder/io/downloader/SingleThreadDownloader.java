@@ -2,7 +2,7 @@ package io.github.carycatz.bwpdwnlder.io.downloader;
 
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 
-import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
 
 public class SingleThreadDownloader extends AbstractDownloader {
     public SingleThreadDownloader() {

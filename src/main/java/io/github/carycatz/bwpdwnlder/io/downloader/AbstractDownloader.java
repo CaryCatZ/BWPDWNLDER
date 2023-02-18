@@ -4,16 +4,16 @@ import com.google.common.io.FileWriteMode;
 import com.google.common.io.Files;
 import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 
-import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
 
-abstract class AbstractDownloader implements Downloader {
+public abstract class AbstractDownloader implements Downloader {
     protected static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54";
 
     protected final ThreadPoolExecutor executor;
@@ -46,17 +46,14 @@ abstract class AbstractDownloader implements Downloader {
             connection.connect();
             in = connection.getInputStream();
             LOGGER.trace("Start transfer to {}", file.getPath());
-            try (BufferedInputStream buf = new BufferedInputStream(in); OutputStream out = Files.asByteSink(file, FileWriteMode.APPEND).openBufferedStream()) {
-                buf.transferTo(out);
-                out.flush();
-            }
+            writeFrom(file, in);
 
             // successfully finished
             if (reporterHook != null) {
                 reporterHook.run();
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             if (++tried > 4) {
                 LOGGER.error("Fail to download!", e);
             } else {
@@ -64,5 +61,21 @@ abstract class AbstractDownloader implements Downloader {
                 download0(file, reporterHook, tried);
             }
         }
+    }
+
+    protected static void writeFrom(File file, InputStream in, FileWriteMode... modes) {
+        try {
+            if (!file.getParentFile().exists()) {
+                Files.createParentDirs(file);
+            }
+            Files.asByteSink(file, modes).writeFrom(in);
+        } catch (IOException e) {
+            LOGGER.error("Cannot write data from {} to {}", in, file);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" + "executor = " + executor + "]";
     }
 }

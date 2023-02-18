@@ -4,11 +4,13 @@ import io.github.carycatz.bwpdwnlder.image.Image;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SourceFactory {
-    private static final HashMap<Pair<Sources, Image.Resolution>, Source> SOURCE_MAP = new HashMap<>(Sources.values().length * Image.Resolution.values().length);
+    private static final Map<Pair<Sources, Image.Resolution>, Source> SOURCE_MAP = new HashMap<>(Sources.values().length * Image.Resolution.values().length);
 
     private SourceFactory() {
+        throw new InstantiationError();
     }
 
     public static Source get(Sources source, Image.Resolution resolution) {

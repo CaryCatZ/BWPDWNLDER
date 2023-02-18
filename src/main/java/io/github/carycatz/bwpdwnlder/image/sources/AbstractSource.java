@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
 
 abstract class AbstractSource implements Source {
     public static final String BING = "https://cn.bing.com";
@@ -37,7 +37,7 @@ abstract class AbstractSource implements Source {
                 for (Element element : select(document)) {
                     if (!entry.getValue().contains(idx++)) continue;
                     list.add(parse(element));
-                    action.accept(list.getLast());
+                    if (action != null) action.accept(list.getLast());
                 }
             } catch (Exception e) {
                 LOGGER.error("Cannot get the page of index {}", entry.getKey(), e);
@@ -47,7 +47,7 @@ abstract class AbstractSource implements Source {
     }
 
     protected Elements select(Document document) {
-        return null;
+        return new Elements();
     }
 
     protected String getUrl(int page) {
@@ -59,7 +59,7 @@ abstract class AbstractSource implements Source {
     }
 
     protected int imageOfEachPage() {
-        return -1;
+        return 1;
     }
 
     protected Pair<Integer, Integer> parseIndex(int index) {

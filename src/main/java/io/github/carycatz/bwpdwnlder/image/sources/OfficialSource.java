@@ -2,8 +2,8 @@ package io.github.carycatz.bwpdwnlder.image.sources;
 
 import com.google.gson.JsonObject;
 import io.github.carycatz.bwpdwnlder.image.Image;
-import io.github.carycatz.bwpdwnlder.application.main.Main;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,8 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.carycatz.bwpdwnlder.application.main.Main.GSON;
-import static io.github.carycatz.bwpdwnlder.application.main.Main.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.GSON;
+import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
 
 public final class OfficialSource extends AbstractSource {
     public static final String URL = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=%s&n=1&mkt=zh-CN";
@@ -27,21 +27,17 @@ public final class OfficialSource extends AbstractSource {
 
     @Override
     public Image.ImageInfo get(int index) {
-        if (index >= 15) {
-            Main.LOGGER.warn("Got invalid index: {} available range: 0 - 15", index);
+        if (index > 14) {
+            LOGGER.warn("Got invalid index: {} available range: 0 - 14", index);
             return null;
         }
-        try {
-            JsonObject json = GSON.fromJson(connect(URL.formatted(index)), JsonObject.class).get("images").getAsJsonArray().get(0).getAsJsonObject();
-            String url = BING + json.get("urlbase").getAsString() + "_%s.jpg".formatted(resolution);
-            String description = json.get("copyright").getAsString();
-            String name = json.get("urlbase").getAsString().split("=")[1];
-            String date = LocalDateTime.now().plusDays(-index).format(DateTimeFormatter.ISO_LOCAL_DATE);
-            return new Image.ImageInfo(url, description, name, date, resolution);
-        } catch (Exception e) {
-            LOGGER.error("Cannot get the image of index {}", index, e);
-            return null;
-        }
+
+        JsonObject json = GSON.fromJson(connect(URL.formatted(index)), JsonObject.class).get("images").getAsJsonArray().get(0).getAsJsonObject();
+        String url = BING + json.get("urlbase").getAsString() + "_%s.jpg".formatted(resolution.getString());
+        String description = json.get("copyright").getAsString();
+        String name = json.get("urlbase").getAsString().split("=")[1];
+        String date = LocalDateTime.now().plusDays(-index).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        return new Image.ImageInfo(url, description, name, date, resolution);
     }
 
     @Override
@@ -62,10 +58,9 @@ public final class OfficialSource extends AbstractSource {
             return StandardCharsets.UTF_8.decode(ByteBuffer.wrap(connection.getInputStream().readAllBytes())).toString();
         } catch (MalformedURLException e) {
             LOGGER.warn("Got invalid url: {}", url);
-            return null;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Cannot connect to {}", url, e);
-            return null;
         }
+        return "";
     }
 }

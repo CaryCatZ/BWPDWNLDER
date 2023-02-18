@@ -6,9 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * <p>Thanks to the author of Bimg.top</p>
- * <p>We download images from bimg.top</p>
- * <p><a href="https://bimg.top/category">Site</a><p>
+ * <a href="https://bimg.top/category">Site</a>
  **/
 public final class BimgSource extends AbstractSource {
     public static final String URL = "http://bimg.top/category/wallpaper/page/%s";
@@ -32,7 +30,7 @@ public final class BimgSource extends AbstractSource {
         String[] s = element.selectXpath(".//a").attr("href").split("/");
         String url = BING + "/th?id=" + s[5].split("!")[0];
         String description = element.selectXpath(".//a").attr("data-title");
-        String name = url.split("=")[1].split("&")[0].replace("_" + resolution + ".jpg", "");
+        String name = url.split("=")[1].split("&")[0].replace("_" + resolution.getString() + ".jpg", "");
         String date = s[4];
         return new Image.ImageInfo(url, description, name, date, resolution);
     }
