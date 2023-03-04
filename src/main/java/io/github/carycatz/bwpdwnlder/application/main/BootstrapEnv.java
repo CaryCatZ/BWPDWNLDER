@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2023 CaryCatZ<carycatz@outlook.com>
+ * Licensed under the MIT License. See License in the project root for license information.
+ */
+
+package io.github.carycatz.bwpdwnlder.application.main;
+
+import com.google.gson.Gson;
+
+public record BootstrapEnv(
+        Arguments arguments,
+        boolean SYNCHRONOUS_MODE,
+        Gson gson
+        ) {
+}

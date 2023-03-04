@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023 CaryCatZ<carycatz@outlook.com>
+ * Licensed under the MIT License. See License in the project root for license information.
+ */
+
 package io.github.carycatz.bwpdwnlder.io.downloader;
 
 import com.google.common.io.FileWriteMode;
@@ -6,20 +11,20 @@ import io.github.carycatz.bwpdwnlder.io.DownloadableFile;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
+import static io.github.carycatz.bwpdwnlder.application.runtime.ApplicationRuntime.LOGGER;
 
-public class MultiThreadDownloader extends AbstractDownloader {
+public class MultiThreadDownloader extends GernericDownloader {
     private final int threadCount;
 
     @SuppressWarnings("unused")
-    public MultiThreadDownloader(ThreadPoolExecutor executor) {
+    public MultiThreadDownloader(ExecutorService executor) {
         this(executor, 2);
     }
 
-    public MultiThreadDownloader(ThreadPoolExecutor executor, int threadCount) {
+    public MultiThreadDownloader(ExecutorService executor, int threadCount) {
         super(executor);
         this.threadCount = threadCount;
     }
@@ -56,7 +61,7 @@ public class MultiThreadDownloader extends AbstractDownloader {
 
         for (int i = 0; i < threadCount; i++) {
             long startPos = i * singleChunkSize;
-            long endPos = Math.min((i + 1) * singleChunkSize - 1, fileSize);
+            long endPos = Math.min((i + 1) * singleChunkSize - 1, fileSize + 1);
             final int n = i;
 
             executor.execute(() -> {

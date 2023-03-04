@@ -1,13 +1,15 @@
+/*
+ * Copyright (c) 2023 CaryCatZ<carycatz@outlook.com>
+ * Licensed under the MIT License. See License in the project root for license information.
+ */
+
 package io.github.carycatz.bwpdwnlder.test;
 
 import io.github.carycatz.bwpdwnlder.application.main.Main;
-import io.github.carycatz.bwpdwnlder.image.Image;
-import io.github.carycatz.bwpdwnlder.image.sources.Sources;
+import io.github.carycatz.bwpdwnlder.features.image.Image;
+import io.github.carycatz.bwpdwnlder.features.image.source.Sources;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-
-import static io.github.carycatz.bwpdwnlder.application.lifecycle.LifeCycle.LOGGER;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,6 +19,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static io.github.carycatz.bwpdwnlder.application.runtime.ApplicationRuntime.LOGGER;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
     private static Path tempDir;
@@ -64,7 +69,7 @@ class MainTest {
                 LOGGER.info(" ".repeat(11) + "Test {} - {}", resolution, source);
                 LOGGER.info("=".repeat(42));
                 assertTimeoutPreemptively(Duration.ofSeconds(20L * count), () -> {
-                    String arg = buildArg(IntStream.range(0, count).boxed(), Map.of(
+                    String arg = buildArgument(IntStream.range(0, count).boxed(), Map.of(
                             "-o", tempDir,
                             "-src", source,
                             "-res", resolution
@@ -81,7 +86,7 @@ class MainTest {
         }
     }
 
-    private static <T> String buildArg(Stream<T> stream, Map<String, Object> args) {
+    private static <T> String buildArgument(Stream<T> stream, Map<String, Object> args) {
         StringBuilder sb = new StringBuilder(128);
         for (Object o : stream.toArray()) {
             sb.append(o).append(" ");
