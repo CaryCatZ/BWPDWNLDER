@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.time.Instant
+
 plugins {
     id 'java'
     id 'application'
@@ -8,6 +11,31 @@ group 'io.github.carycatz'
 version = project.app_version
 mainClassName = 'io.github.carycatz.bwpdwnlder.application.main.Main'
 
+tasks.withType(ProcessResources).configureEach {
+    it.doLast {
+        def versionFile = file("$projectDir/build/resources/main/META-INF/version.properties")
+        def currentCommit = 'git rev-parse HEAD'.execute([], rootDir).text.trim()
+        def versionProperties = new Properties()
+
+        if (versionFile.exists()) {
+            try (def input = new FileInputStream(versionFile)) {
+                versionProperties.load(input)
+                versionProperties.setProperty("date", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'+8'").format(Date.from(Instant.now())))
+                versionProperties.setProperty("commit", currentCommit)
+                versionProperties.setProperty("version", project.version.toString())
+            }
+            try (def output = new FileOutputStream(versionFile)) {
+                versionProperties.store(output, "")
+            }
+            if (jar.archiveFile.get().asFile.exists()) {
+                from versionFile
+                include("version.properties")
+                into jar.archiveFile.get().asFile
+            }
+        }
+    }
+}
+
 repositories {
     maven {
         url 'https://maven.aliyun.com/repository/public/'
@@ -17,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.google.code.gson:gson:2.10.1'

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023 CaryCatZ<carycatz@outlook.com>
+  ~ Licensed under the MIT License. See License in the project root for license information.
+  -->
+
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="SysOut" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%level] %msg%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <asyncRoot level="info">
+            <filters>
+                <MarkerFilter marker="NETWORK_PACKETS" onMatch="DENY" onMismatch="NEUTRAL" />
+            </filters>
+            <AppenderRef ref="SysOut"/>
+        </asyncRoot>
+    </Loggers>
+</Configuration>
